@@ -24,14 +24,14 @@ export default class ProductManager {
     } 
 
     // Create
-    async addProduct(title, description, price, thumbnail, code, stock){
+    async addProduct(title, description, price, thumbnail, code, stock, category, status){
         try {
             if (!this.init) {
                 await this.initManager()
             }
 
             // Error checking, see if there's missing data
-            if (title && description && price && thumbnail && code && stock){
+            if (title && description && price && thumbnail && code && stock && category){
                 // Code must be unique
                 if (this.products.some(prod => prod.code === code)) {
                     console.log('código repetido')
@@ -48,6 +48,9 @@ export default class ProductManager {
                     })
                 }
 
+                // If no status was sent, set as true
+                status = typeof status !== 'undefined' ? status : true;
+
                 let product = {
                     'id': maxID + 1,
                     'title': title,
@@ -55,7 +58,9 @@ export default class ProductManager {
                     'price': price,
                     'thumbnail': thumbnail,
                     'code': code,
-                    'stock': stock
+                    'stock': stock,
+                    'category': category,
+                    'status': status
                 }
 
                 // Save data in file and in array
@@ -121,6 +126,8 @@ export default class ProductManager {
                 productAct.price = productNew?.price || productAct.price
                 productAct.thumbnail = productNew?.thumbnail || productAct.thumbnail
                 productAct.stock = productNew?.stock || productAct.stock
+                productAct.category = productNew?.category || productAct.stock
+                productAct.status = typeof productNew?.status !== 'undefined' ? productAct.status : productAct.status;
 
                 // Uses map to change in the array the actual product with the updated product if the IDs match. 
                 // All other products will be safe
@@ -165,26 +172,15 @@ export default class ProductManager {
 // Use folder from terminnal stand
 const productManager = new ProductManager("./products.json");
 
-//productManager.addProduct("Rosas", "Flores lindas", 11, "ubicacionImagen.txt", "rlr01", 15);
-//productManager.addProduct("Claveles", "Flores", 10, "ubicacionImagen2.txt", "rlr02", 5);
-//productManager.addProduct("Alfajores", "Rico", 8, "ubicacionImagen3.txt", "rlr03", 5); //Stock y price
-//productManager.addProduct("Chocolates", "En forma de jet", 12, "ubicacionImagen4.txt", "rlr04", 5);
-//productManager.addProduct("Pulsera Onix", "Para las buenas energías", 30, "ubicacionImagen5.txt", "rlr05", 8);
-//productManager.addProduct("Sobre rosado", "Para las cartas", 100, "ubicacionImagen6.txt", "rlr06", 2);
-//productManager.addProduct("Velas", "Enciende la luz", 40, "ubicacionImagen7.txt", "rlr07", 4);
-//productManager.addProduct("Cobija", "Que frío", 10, "ubicacionImagen8.txt", "rlr08", 20);
-//productManager.addProduct("Pantuflas", "De a una pa que combinen", 29, "ubicacionImagen9.txt", "rlr09", 7);
-//productManager.addProduct("Collar de rosa", "Atrae sangre", 10, "ubicacionImagen10.txt", "rlr10", 12);
-//productManager.addProduct("Aretes", "Menos es más", 8, "ubicacionImagen11.txt", "rlr11", 8);
-//productManager.addProduct("Sueter", "De los de navidad", 10, "ubicacionImagen12.txt", "rlr12", 25);
-
-//productManager.getProductById(2)
-//productManager.getProductById(22)
-
-//productManager.getProducts();
-
-//productManager.updateProduct(3, {title:"Zapato", description:"Para caminar", price:40, thumbnail:"ubicacionArchivo.txt", stock:20});
-//productManager.updateProduct(33, {title:"Zapato", description:"Para caminar", price:40, thumbnail:"ubicacionArchivo.txt", stock:20});
-
-//productManager.deleteProduct(2);
-//productManager.deleteProduct(23);
+//productManager.addProduct("Rosas", "Flores lindas", 11, "ubicacionImagen.txt", "rlr01", 15, "Flor", false);
+//productManager.addProduct("Claveles", "Flores", 10, "ubicacionImagen2.txt", "rlr02", 5, "Flor");
+//productManager.addProduct("Alfajores", "Rico", 8, "ubicacionImagen3.txt", "rlr03", 5, "Comida"); //Stock y price
+//productManager.addProduct("Chocolates", "En forma de jet", 12, "ubicacionImagen4.txt", "rlr04", 5, "Comida");
+//productManager.addProduct("Pulsera Onix", "Para las buenas energías", 30, "ubicacionImagen5.txt", "rlr05", 8, "Trinquete");
+//productManager.addProduct("Sobre rosado", "Para las cartas", 100, "ubicacionImagen6.txt", "rlr06", 2, "Trinquete");
+//productManager.addProduct("Velas", "Enciende la luz", 40, "ubicacionImagen7.txt", "rlr07", 4, "Trinquete");
+//productManager.addProduct("Cobija", "Que frío", 10, "ubicacionImagen8.txt", "rlr08", 20, "Ropa");
+//productManager.addProduct("Pantuflas", "De a una pa que combinen", 29, "ubicacionImagen9.txt", "rlr09", 7, "Ropa");
+//productManager.addProduct("Collar de rosa", "Atrae sangre", 10, "ubicacionImagen10.txt", "rlr10", 12, "Trinquete");
+//productManager.addProduct("Aretes", "Menos es más", 8, "ubicacionImagen11.txt", "rlr11", 8, "Trinquete");
+//productManager.addProduct("Sueter", "De los de navidad", 10, "ubicacionImagen12.txt", "rlr12", 25, "Ropa");

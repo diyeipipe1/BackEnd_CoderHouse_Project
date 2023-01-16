@@ -35,8 +35,28 @@ router.get("/", async (req, res) => {
     }
 })
 
-router.post("/lol", async (req, res) => {
-    let products = await productManager.addProduct("House","dd",2,"dd","eeee",2);
+// Get by product ID
+router.get("/:pid",async (req, res) => {
+    try {
+        let pid = req.params.pid
+        pid = Number(pid)
+
+        if (!pid){return res.status(400).send({ status: "ParamsError", error: "the param pid is expected to be a number" })}
+
+        // Get the product
+        const product = await productManager.getProductById(pid)
+
+        // If we get null then the product with given id wasn't found
+        if (!product){
+            res.status(404).send({status: "NotFoundError", error: "product with param id not found"})
+        }
+
+        res.send(product)
+    
+    } catch (error) {
+        // Error handling if the productManager sends an error
+        return res.status(500).send({status: "InternalServerError", error: "there was an error reading the data"})
+    }
 })
 
 // export the router
