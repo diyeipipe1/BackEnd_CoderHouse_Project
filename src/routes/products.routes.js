@@ -52,10 +52,37 @@ router.get("/:pid",async (req, res) => {
         }
 
         res.send(product)
-    
     } catch (error) {
         // Error handling if the productManager sends an error
         return res.status(500).send({status: "InternalServerError", error: "there was an error reading the data"})
+    }
+})
+
+// Post product
+router.post("/", async (req, res) => {
+    try {
+        let prodNew = req.body
+
+        // Error checking, see if there's missing data
+        if (prodNew.title && prodNew.description && prodNew.price && prodNew.thumbnail && 
+            prodNew.code && prodNew.stock && prodNew.category){
+
+            // Create product
+            const product = await productManager.addProduct(prodNew.title, prodNew.description, prodNew.price,
+                prodNew.thumbnail, prodNew.code, prodNew.stock, prodNew.category, prodNew.status)
+
+            // If we get something falsy then the product wasn't created correctly
+            if (!product){
+                res.status(400).send({status: "NotCreatedError", error: "there was an error creating the product"})
+            }
+
+            res.send(product)
+        }else{
+            return res.status(400).send({status: "BadRequest", error:"missing field or fields in request body"})
+        }
+    } catch (err) {
+        // Error handling if the productManager sends an error
+        return res.status(400).send({status:"BadRequest", error: err.message})
     }
 })
 

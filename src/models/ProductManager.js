@@ -30,12 +30,14 @@ export default class ProductManager {
                 await this.initManager()
             }
 
-            // Error checking, see if there's missing data
-            if (title && description && price && thumbnail && code && stock && category){
+            // Error checking, see if data has the correct typing
+            if ((typeof title === "string") && (typeof description === "string") && (typeof price === "number") && 
+            (typeof thumbnail === "string") && (typeof code === "string") && (typeof stock === "number") && 
+            (typeof category === "string")){
                 // Code must be unique
                 if (this.products.some(prod => prod.code === code)) {
-                    console.log('código repetido')
-                    return null
+                    console.log('Repeated code')
+                    throw new Error("product code already exists")
                 }
 
                 // Find maxID in file to set new ID as one higher
@@ -70,8 +72,8 @@ export default class ProductManager {
                 // Return product added
                 return product
             }else{
-                console.log("faltan datos")
-                return null
+                console.log("Wrong type of data")
+                throw new Error("type mismatch with one or more fields in request body")
             }
         } catch (error) {
             throw error;
@@ -103,7 +105,7 @@ export default class ProductManager {
                 return product
             }
 
-            console.log("No hay producto con tal ID")
+            console.log("No products with given ID")
             return null
         } catch (error) {
             throw error
