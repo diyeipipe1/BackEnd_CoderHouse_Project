@@ -59,8 +59,6 @@ router.get("/:cid", async(req, res) => {
         // Error handling if the cartManager sends an error
         return res.status(400).send({status:"InternalServerError", error: err.message})
     }
-
-    res.send(products)
 })
 
 

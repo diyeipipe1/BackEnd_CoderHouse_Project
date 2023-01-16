@@ -52,24 +52,19 @@ export default class CartManager{
                 // If products in request have extra fields, don't use them. Assumes product field types are ok (todo might be revised later)
                 products.forEach((prod) =>{
                     // Error checking, see if there's missing data
-                    if (prod.title && prod.description && prod.price && prod.thumbnail && 
-                        prod.code && prod.stock && prod.category){
-                            // If no status was sent, set as true
-                            prod.status = typeof prod.status !== 'undefined' ? prod.status : true;
+                    if (prod.id && prod.quantity){
 
-                            let product = {
-                                'id': prod.id,
-                                'title': prod.title,
-                                'description': prod.description,
-                                'price': prod.price,
-                                'thumbnail': prod.thumbnail,
-                                'code': prod.code,
-                                'stock': prod.stock,
-                                'category': prod.category,
-                                'status': prod.status
-                            }
-        
-                            cart.products.push(product)
+                        if (!(typeof prod.id === "number") || !(typeof prod.quantity === "number")){
+                            console.log("Wrong type of data")
+                            throw new Error("type mismatch with one or more fields in request body")
+                        }
+                        
+                        let prodMinified = {
+                            'id': prod.id,
+                            'quantity': prod.quantity
+                        }
+    
+                        cart["products"].push(prodMinified)
                         }else{
                             console.log("Missing data")
                             throw new Error("one or more products have missing required fields")
