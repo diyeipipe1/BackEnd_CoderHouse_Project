@@ -12,7 +12,7 @@ router.use(express.urlencoded({extended: true}))
 const productManager = new ProductManager("./src/products.json")
 
 // Get all or Get limited number by query ?=limit 
-router.get("/", async (req, res) => {
+router.get("/", async(req, res) => {
     // Try catch in case the number conversion of limit returns an error
     try {
         let limit = req.query.limit
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
 })
 
 // Get by product ID
-router.get("/:pid",async (req, res) => {
+router.get("/:pid", async(req, res) => {
     try {
         let pid = req.params.pid
         pid = Number(pid)
@@ -59,7 +59,7 @@ router.get("/:pid",async (req, res) => {
 })
 
 // Post product
-router.post("/", async (req, res) => {
+router.post("/", async(req, res) => {
     try {
         let prodNew = req.body
 
@@ -87,7 +87,7 @@ router.post("/", async (req, res) => {
 })
 
 // Put product
-router.put("/:pid", async (req, res) => {
+router.put("/:pid", async(req, res) => {
     try {
         let pid = req.params.pid
         let prodNew = req.body
@@ -100,15 +100,40 @@ router.put("/:pid", async (req, res) => {
 
 
         // If we get something falsy then the product wasn't updated correctly
-            if (!prod){
-                res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
-            }
+        if (!prod){
+            res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
+        }
 
-            res.send(prod)
+        res.send(prod)
 
     } catch (err) {
         return res.status(404).send({status:"NotFoundError", error: err.message})
     }
 })
+
+// Delete product
+router.delete("/:pid", async(req, res) => {
+    try {
+        let pid = req.params.pid
+        pid = Number(pid)
+    
+        if (!pid){return res.status(400).send({ status: "ParamsError", error: "the param pid is expected to be a number" })}
+    
+        // Try to delete the product with the class function
+        const verif = await productManager.deleteProduct(pid)
+
+        // If we get something falsy then the product wasn't deleted correctly
+        if (!verif){
+            res.status(400).send({status: "NotUpdatedError", error: "there was an error deleting the product"})
+        }
+
+        res.status(200).send({status:"Ok", error: "product deleted correctly"})
+
+    } catch (err) {
+        return res.status(404).send({status:"NotFoundError", error: err.message})
+    }
+})
+
+
 // export the router
 export default router;

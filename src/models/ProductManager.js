@@ -105,7 +105,7 @@ export default class ProductManager {
                 return product
             }
 
-            console.log("No products with given ID")
+            console.log("no products with given ID")
             return null
         } catch (error) {
             throw error
@@ -163,8 +163,8 @@ export default class ProductManager {
                 await fs.promises.writeFile(this.path, JSON.stringify(products))
                 return true
             } else {
-                console.log('producto no encontrado')
-                return false
+                console.log('product to delete not found')
+                throw new Error("no product found with id given to delete")
             }
         } catch (error) {
             throw error
