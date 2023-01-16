@@ -86,5 +86,29 @@ router.post("/", async (req, res) => {
     }
 })
 
+// Put product
+router.put("/:pid", async (req, res) => {
+    try {
+        let pid = req.params.pid
+        let prodNew = req.body
+        pid = Number(pid)
+
+        if (!pid){return res.status(400).send({ status: "ParamsError", error: "the param pid is expected to be a number" })}
+
+        // Try to update the product with the class function
+        const prod = await productManager.updateProduct(pid, prodNew)
+
+
+        // If we get something falsy then the product wasn't updated correctly
+            if (!prod){
+                res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
+            }
+
+            res.send(prod)
+
+    } catch (err) {
+        return res.status(404).send({status:"NotFoundError", error: err.message})
+    }
+})
 // export the router
 export default router;

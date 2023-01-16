@@ -135,10 +135,11 @@ export default class ProductManager {
                 // All other products will be safe
                 let products = this.products.map(prod => prod.id === id ? productAct : prod)
                 await fs.promises.writeFile(this.path, JSON.stringify(products))
-                console.log(productAct)
+                
+                return productAct
             }else{
-                console.log('producto no encontrado')
-                return null
+                console.log('product to update not found')
+                throw new Error("no product found with id given to update")
             }
         } catch (error) {
             throw error
