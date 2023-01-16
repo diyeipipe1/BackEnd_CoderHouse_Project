@@ -106,5 +106,41 @@ export default class CartManager{
     } 
 
     // Add stock for product
-    
+    // toddo: Add return cart for next iteration?
+    async addProductForCart(cid, pid){
+        try {
+            if (!this.init) {
+                await this.initManager()
+            }
+
+            let cart = await this.getCartById(cid)
+
+            if (cart) {
+                let done = false
+                cart.forEach((prod) =>{
+                    if (prod.id == pid){
+                        prod.quantity++
+                        done= true
+                    }
+                })
+
+                if (!done){
+                    cart.push({"id":pid, "quantity":1})
+                    done= true
+                }
+
+                await fs.promises.writeFile(this.path, JSON.stringify(this.carts))
+
+                // Return operation status
+                return done
+            }else {
+                console.log('cart to add products to not found')
+                throw new Error("no cart found with id given to add product")
+            }
+
+        } catch (error) {
+            throw error
+        }
+        // si se añade uno existente aumentar, incrementar de a uno
+    }
 }

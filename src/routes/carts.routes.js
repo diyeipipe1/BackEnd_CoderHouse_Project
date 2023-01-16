@@ -61,6 +61,30 @@ router.get("/:cid", async(req, res) => {
     }
 })
 
+// Add quantity to a product
+router.post("/:cid/product/:pid", async(req, res) => {
+    try {
+        let pid = req.params.pid
+        pid = Number(pid)
+        let cid = req.params.cid
+        cid = Number(cid)
+    
+        if ((!pid) || (!cid)){return res.status(400).send({ status: "ParamsError", error: "the params pid & cid are expected to be numbers" })}
+    
+        // Try to add quantity to the product with the class function
+        const verif = await cartManager.addProductForCart(cid, pid)
+
+        // If we get something falsy then the product wasn't deleted correctly
+        if (!verif){
+            res.status(400).send({status: "NotAddedError", error: "there was an error adding the product"})
+        }
+
+        res.status(200).send({status:"Ok", error: "product added correctly"})
+    } catch (err) {
+        return res.status(404).send({status:"CartNotFoundError", error: err.message})
+        
+    }
+})
 
 // export the router
 export default router;
