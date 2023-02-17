@@ -91,6 +91,41 @@ export default class CartDBManager{
         }
     }
 
+    // Update product quantity for cart
+    async updateCartProduct(cid, pid, quantity){
+        try {
+            quantity = Number(quantity)
+            if (!quantity){ throw new Error("the quantity is expected to be a number")}
+
+            let cart = await this.getCartById(cid)
+
+            if (cart) {
+                let done = false
+                let cart = await CartModel.findOne({ _id: cid });
+
+                let productIndex = cart.products.findIndex(p => {return p.id===(pid)});
+                if (productIndex >= 0) {
+                    cart.products[productIndex].quantity = quantity
+                    done = true
+                }else {
+                    throw new Error("no product with given id on cart")
+                }
+
+                let result = await cart.save();
+                console.log(result)
+
+                // Return operation status
+                return result
+            }else {
+                console.log('cart to add products to not found')
+                throw new Error("no cart found with id given to add product")
+            }
+
+        } catch (error) {
+            throw error
+        }
+    }
+
     // Delete product for cart
     async deleteProductForCart(cid, pid){
         try {

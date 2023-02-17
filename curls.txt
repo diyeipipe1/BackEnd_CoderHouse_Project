@@ -71,5 +71,13 @@ curl --location --request PUT 'localhost:8080/api/carts/63e8ea1666d66f3c2898093c
 '
 
 ----------------------------------------------------------------------------
+Put Product Quantity Cart
+curl --location --request PUT 'localhost:8080/api/carts/63ef35b2042567c930b4d414/product/63e49dda0bc2a55e29faf2d3ee' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "quantity":300
+}'
+
+----------------------------------------------------------------------------
 Delete Product Cart
 curl --location --request DELETE 'localhost:8080/api/carts/63ef35b2042567c930b4d414/product/63e49dda0bc2a55e29faf2d3edel'

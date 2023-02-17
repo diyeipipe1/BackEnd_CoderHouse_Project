@@ -83,20 +83,38 @@ router.put("/:cid", async(req, res) => {
         let prodsNew = req.body
 
         // Try to elim product with the class function
-        const prodUpdated = await cartDBManager.updateCart(cid, prodsNew)
+        const prodsUpdated = await cartDBManager.updateCart(cid, prodsNew)
 
-        if (!prodUpdated){
+        if (!prodsUpdated){
             res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
         }
 
-        res.send(prodUpdated)
+        res.send(prodsUpdated)
     } catch (err) {
         return res.status(404).send({status:"CartNotFoundError", error: err.message})
     }
 })
 
 // Update quantity of product 
+router.put("/:cid/product/:pid", async(req, res) => {
+    try {
+        let pid = req.params.pid
+        let cid = req.params.cid
+        let quantity = req.body.quantity
 
+        // Try to elim product with the class function
+        const prodUpdated = await cartDBManager.updateCartProduct(cid, pid, quantity)
+
+        if (!prodUpdated){
+            res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
+        }
+
+        res.send(prodUpdated)   
+    } catch (err) {
+        return res.status(404).send({status:"CartNotFoundError", error: err.message})
+    }
+})
+    
 
 // Delete product from cart
 router.delete("/:cid/product/:pid", async(req, res) => {
