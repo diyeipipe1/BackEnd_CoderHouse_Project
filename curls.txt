@@ -52,3 +52,7 @@ curl --location --request POST 'localhost:8080/api/carts'
 ----------------------------------------------------------------------------
 Post Product Cart
 curl --location --request POST 'localhost:8080/api/carts/1/product/4'
+
+----------------------------------------------------------------------------
+Delete Product Cart
+curl --location --request DELETE 'localhost:8080/api/carts/63ef35b2042567c930b4d414/product/63e49dda0bc2a55e29faf2d3edel'

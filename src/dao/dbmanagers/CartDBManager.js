@@ -66,4 +66,38 @@ export default class CartDBManager{
         }
         // si se añade uno existente aumentar, incrementar de a uno
     }
+
+    // Delete product for cart
+    async deleteProductForCart(cid, pid){
+        try {
+            let cart = await this.getCartById(cid)
+
+            if (cart) {
+                let done = false
+                let cart = await CartModel.findOne({ _id: cid });
+
+                let productIndex = cart.products.findIndex(p => {return p.id===(pid)});
+                if (productIndex >= 0) {
+                    cart.products.splice(productIndex,1)
+                    done = true
+                }else {
+                    throw new Error("no product with given id on cart")
+                }
+
+                let result = await cart.save();
+                console.log(result)
+
+
+                // Return operation status
+                return done
+            }else {
+                console.log('cart to add products to not found')
+                throw new Error("no cart found with id given to add product")
+            }
+
+        } catch (error) {
+            throw error
+        }
+        // si se añade uno existente aumentar, incrementar de a uno
+    }
 }
