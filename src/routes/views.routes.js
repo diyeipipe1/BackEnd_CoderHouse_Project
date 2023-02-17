@@ -1,6 +1,7 @@
 import express from "express";
 import __dirname from '../utils.js'
 import ProductManager from "../dao/filemanagers/ProductManager.js";
+import ProductDBManager from "../dao/dbmanagers/ProductDBManager.js";
 
 // Bring the module
 const router = express.Router();
@@ -11,15 +12,18 @@ router.use(express.urlencoded({extended: true}))
 
 // activate the product manager
 const productManager = new ProductManager(__dirname+"/public/data/products.json")
+const productDBManager = new ProductDBManager()
 
 // Get all products
 router.get("/", async(req, res) => {
     // Try catch in case the number conversion of limit returns an error
     try {
         // get the products
-        let products = await productManager.getProducts();
+        let products = await productDBManager.getProducts(10,1,"","");
 
-        res.render("home.handlebars", {products})
+        let prods = products.payload
+
+        res.render("home.handlebars", {prods})
     } catch (error) {
         // Error handling if the productManager sends an error
         return res.status(500).send({status: "InternalServerError", error: "there was an error reading the data"}) 
