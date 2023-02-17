@@ -35,7 +35,9 @@ router.get("/realtimeproducts", async(req, res) => {
     // Try catch in case the number conversion of limit returns an error
     try {
         // get the products
-        let products = await productManager.getProducts();
+        let productRes = await productDBManager.getProducts(100,1,"","");
+
+        let products = productRes.payload
 
         res.render("realTimeProducts.handlebars", {products})
 
