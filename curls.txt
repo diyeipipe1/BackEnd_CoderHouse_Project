@@ -60,11 +60,11 @@ curl --location --request PUT 'localhost:8080/api/carts/63e8ea1666d66f3c2898093c
 --data-raw '
 [
 {
-    "id": "63e49dda0bc2a55e29faf2d3e",
+    "product": "63e49dda0bc2a55e29faf2d3e",
     "quantity": 3
 },
 {
-    "id": "63e49dda0bc2a55e29faf2d3ee",
+    "product": "63e49dda0bc2a55e29faf2d3ee",
     "quantity": 125
 }
 ]

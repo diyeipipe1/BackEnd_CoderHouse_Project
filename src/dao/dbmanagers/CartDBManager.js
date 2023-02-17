@@ -1,4 +1,5 @@
 import {CartModel} from "../models/cart.models.js";
+import mongoose from "mongoose";
 
 export default class CartDBManager{
     // Create
@@ -12,6 +13,26 @@ export default class CartDBManager{
             throw error;
         }
     }
+
+    // Read
+    async getCartByIdPopulate(id){
+        try {
+            let cart = await CartModel.findById(id).populate('products.product');
+
+            if (cart) {
+                return cart.products
+            }
+
+            console.log("no carts with given ID")
+            return null
+        } catch (error) {
+            if ((error.message).indexOf("Cast to ObjectId failed for value") !== -1){
+                return null
+            }else{
+                throw error
+            }
+        }
+    } 
 
     // Read
     async getCartById(id){
@@ -40,13 +61,12 @@ export default class CartDBManager{
             if (cart) {
                 let done = false
                 let cart = await CartModel.findOne({ _id: cid });
-
-                let productIndex = cart.products.findIndex(p => {return p.id===(pid)});
+                let productIndex = cart.products.findIndex(p => {return p.product.equals(mongoose.Types.ObjectId(pid))});
                 if (productIndex >= 0) {
                     cart.products[productIndex].quantity++;
                     done = true
                 }else {
-                    cart.products.push({ id: pid, quantity: 1 });
+                    cart.products.push({ product: pid, quantity: 1 });
                     done = true
                 }
 
@@ -71,8 +91,13 @@ export default class CartDBManager{
     async updateCart(cid, prodsNew){
         try {
             let cartAct = await this.getCartById(cid)
-            if (cartAct){
-                let result = await CartModel.updateOne({_id:cid}, { $set: { products: prodsNew }});
+            if (cartAct){  
+                // convert id to mongoose id object      
+                const newProdsArray = prodsNew.map(prod => {
+                    return { product: mongoose.Types.ObjectId(prod.product), quantity: prod.quantity };
+                })
+
+                let result = await CartModel.updateOne({_id:cid}, { $set: { products: newProdsArray }});
                 console.log(result)
                 
                 if (result.modifiedCount >0){
@@ -103,7 +128,7 @@ export default class CartDBManager{
                 let done = false
                 let cart = await CartModel.findOne({ _id: cid });
 
-                let productIndex = cart.products.findIndex(p => {return p.id===(pid)});
+                let productIndex = cart.products.findIndex(p => {return p.product.equals(mongoose.Types.ObjectId(pid))});
                 if (productIndex >= 0) {
                     cart.products[productIndex].quantity = quantity
                     done = true
@@ -154,7 +179,7 @@ export default class CartDBManager{
                 let done = false
                 let cart = await CartModel.findOne({ _id: cid });
 
-                let productIndex = cart.products.findIndex(p => {return p.id===(pid)});
+                let productIndex = cart.products.findIndex(p => {return p.product.equals(mongoose.Types.ObjectId(pid))});
                 if (productIndex >= 0) {
                     cart.products.splice(productIndex,1)
                     done = true

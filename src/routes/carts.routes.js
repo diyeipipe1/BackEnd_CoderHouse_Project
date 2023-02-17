@@ -40,11 +40,11 @@ router.get("/:cid", async(req, res) => {
 
         // get the wanted cart products
         //let products = await cartManager.getCartById(cid);
-        let products = await cartDBManager.getCartById(cid);
+        let products = await cartDBManager.getCartByIdPopulate(cid);
 
         // If we get null then the cart with given id wasn't found
         if (!products){
-            res.status(404).send({status: "NotFoundError", error: "cart with param id not found"})
+            return res.status(404).send({status: "NotFoundError", error: "cart with param id not found"})
         }
 
         res.send(products)
