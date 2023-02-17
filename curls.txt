@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------
 Get products
-curl --location --request GET 'localhost:8080/api/products/?limit=3'
+curl --location -g --request GET 'localhost:8080/api/products/?limit=3&sort=desc&query={"category":"Ropa"}'
 
 ----------------------------------------------------------------------------
 Get product
