@@ -67,6 +67,30 @@ export default class CartDBManager{
         // si se añade uno existente aumentar, incrementar de a uno
     }
 
+    // Update product list for cart
+    async updateCart(cid, prodsNew){
+        try {
+            let cartAct = await this.getCartById(cid)
+            if (cartAct){
+                let result = await CartModel.updateOne({_id:cid}, { $set: { products: prodsNew }});
+                console.log(result)
+                
+                if (result.modifiedCount >0){
+                    let finalCart = await this.getCartById(cid)
+                    return finalCart
+                }else{
+                    console.log('error updating cart')
+                    throw new Error("error updating cart, data might be wrong type or same as current document")
+                }
+            }else{
+                console.log('cart to update not found')
+                throw new Error("no cart found with id given to update")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
     // Delete product for cart
     async deleteProductForCart(cid, pid){
         try {
@@ -86,7 +110,6 @@ export default class CartDBManager{
 
                 let result = await cart.save();
                 console.log(result)
-
 
                 // Return operation status
                 return done
