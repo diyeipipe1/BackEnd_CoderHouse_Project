@@ -23,7 +23,7 @@ router.post("/", async(req, res) => {
 
         // If we get something falsy then the cart wasn't created correctly
         if (!cart){
-            res.status(400).send({status: "NotCreatedError", error: "there was an error creating the cart"})
+            return res.status(400).send({status: "NotCreatedError", error: "there was an error creating the cart"})
         }
 
         res.send(cart)
@@ -67,7 +67,7 @@ router.post("/:cid/product/:pid", async(req, res) => {
 
         // If we get something falsy then the product wasn't deleted correctly
         if (!verif){
-            res.status(400).send({status: "NotAddedError", error: "there was an error adding the product"})
+            return res.status(400).send({status: "NotAddedError", error: "there was an error adding the product"})
         }
 
         res.status(200).send({status:"Ok", error: "product added correctly"})
@@ -86,7 +86,7 @@ router.put("/:cid", async(req, res) => {
         const prodsUpdated = await cartDBManager.updateCart(cid, prodsNew)
 
         if (!prodsUpdated){
-            res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
+            return res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
         }
 
         res.send(prodsUpdated)
@@ -106,7 +106,7 @@ router.put("/:cid/product/:pid", async(req, res) => {
         const prodUpdated = await cartDBManager.updateCartProduct(cid, pid, quantity)
 
         if (!prodUpdated){
-            res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
+            return res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the product"})
         }
 
         res.send(prodUpdated)   
@@ -124,7 +124,7 @@ router.delete("/:cid", async(req, res) => {
         const cartUpdated = await cartDBManager.deleteCart(cid)
 
         if (!cartUpdated){
-            res.status(400).send({status: "NotDeletedError", error: "there was an error deleting the products in the cart"})
+            return res.status(400).send({status: "NotDeletedError", error: "there was an error deleting the products in the cart"})
         }
 
         res.send(cartUpdated)
@@ -143,7 +143,7 @@ router.delete("/:cid/product/:pid", async(req, res) => {
         const verif = await cartDBManager.deleteProductForCart(cid, pid)
 
         if (!verif){
-            res.status(400).send({status: "NotDeletedError", error: "there was an error deleting the product"})
+            return res.status(400).send({status: "NotDeletedError", error: "there was an error deleting the product"})
         }
 
         res.status(200).send({status:"Ok", error: "product deleted correctly"})
