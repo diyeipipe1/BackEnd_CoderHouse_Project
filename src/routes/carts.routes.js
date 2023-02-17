@@ -114,7 +114,24 @@ router.put("/:cid/product/:pid", async(req, res) => {
         return res.status(404).send({status:"CartNotFoundError", error: err.message})
     }
 })
-    
+
+// Delete products from cart 
+router.delete("/:cid", async(req, res) => {
+    try {
+        let cid = req.params.cid
+
+        // Try to elim product with the class function
+        const cartUpdated = await cartDBManager.deleteCart(cid)
+
+        if (!cartUpdated){
+            res.status(400).send({status: "NotDeletedError", error: "there was an error deleting the products in the cart"})
+        }
+
+        res.send(cartUpdated)
+    } catch (err) {
+        return res.status(404).send({status:"CartNotFoundError", error: err.message})
+    }
+}) 
 
 // Delete product from cart
 router.delete("/:cid/product/:pid", async(req, res) => {

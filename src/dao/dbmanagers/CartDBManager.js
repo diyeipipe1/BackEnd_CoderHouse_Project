@@ -126,6 +126,25 @@ export default class CartDBManager{
         }
     }
 
+    // Delete product list for cart
+    async deleteCart(cid){
+        try {
+            let cartAct = await this.getCartById(cid)
+            if (cartAct){
+                let result = await CartModel.updateOne({_id:cid}, { $set: { products: [] }});
+                console.log(result)
+                
+                let finalCart = await CartModel.findById(cid);
+                return finalCart
+            }else{
+                console.log('cart to update not found')
+                throw new Error("no cart found with id given to update")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    
     // Delete product for cart
     async deleteProductForCart(cid, pid){
         try {
