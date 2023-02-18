@@ -30,6 +30,35 @@ router.get("/", async(req, res) => {
     }
 })
 
+router.get("/products", async (req, res) => {
+    try {
+        let limit = req.query.limit || 5
+        let page = req.query.page || 1
+        let sort = req.query.sort 
+        let query = req.query.query 
+
+        // get the products
+        let response = await productDBManager.getProducts(limit, page, sort, query);
+
+        let {payload, hasPrevPage, hasNextPage, prevLink, nextLink, pageNum} = response
+
+        res.render("products", {
+          payload,
+          hasNextPage,
+          hasPrevPage,
+          nextLink,
+          prevLink,
+          pageNum
+        });
+    } catch (err) {
+        // Error handling if the productManager sends an error
+        return res.status(500).send({status: "InternalServerError", error: err.message}) 
+    }
+});
+
+
+// Sockets - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 // Get all products in real time
 router.get("/realtimeproducts", async(req, res) => {
     // Try catch in case the number conversion of limit returns an error

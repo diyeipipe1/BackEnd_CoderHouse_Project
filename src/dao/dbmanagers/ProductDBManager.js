@@ -52,8 +52,8 @@ export default class ProductDBManager{
             const result = await ProductModel.paginate({}, options);
 
             // special thanks to my classmates for the next line
-            result.prevLink = `http://localhost:8080/api/products/?${"limit=" + limit}${"&page=" + (+page - 1)}${query? "&query=" + encodeURIComponent(JSON.stringify(query)) + "&" : ""}${sort ? "&sort=" + sort : ""}`
-            result.nextLink = `http://localhost:8080/api/products/?${"limit=" + limit}${"&page=" + (+page + 1)}${query? "&query=" + encodeURIComponent(JSON.stringify(query)) + "&" : ""}${sort ? "&sort=" + sort : ""}`
+            result.prevLink = `http://localhost:8080/products/?${"limit=" + limit}${"&page=" + (+page - 1)}${query? "&query=" + encodeURIComponent(JSON.stringify(query)) + "&" : ""}${sort ? "&sort=" + sort : ""}`
+            result.nextLink = `http://localhost:8080/products/?${"limit=" + limit}${"&page=" + (+page + 1)}${query? "&query=" + encodeURIComponent(JSON.stringify(query)) + "&" : ""}${sort ? "&sort=" + sort : ""}`
 
             return {
                 status: "success",
