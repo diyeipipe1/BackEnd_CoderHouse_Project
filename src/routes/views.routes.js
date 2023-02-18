@@ -2,6 +2,7 @@ import express from "express";
 import __dirname from '../utils.js'
 import ProductManager from "../dao/filemanagers/ProductManager.js";
 import ProductDBManager from "../dao/dbmanagers/ProductDBManager.js";
+import CartDBManager from "../dao/dbmanagers/CartDBManager.js";
 
 // Bring the module
 const router = express.Router();
@@ -13,6 +14,7 @@ router.use(express.urlencoded({extended: true}))
 // activate the product manager
 const productManager = new ProductManager(__dirname+"/public/data/products.json")
 const productDBManager = new ProductDBManager()
+const cartDBManager = new CartDBManager()
 
 // Get all products
 router.get("/", async(req, res) => {
@@ -30,9 +32,10 @@ router.get("/", async(req, res) => {
     }
 })
 
+// Get paginated products and add them to a cart
 router.get("/products", async (req, res) => {
     try {
-        let limit = req.query.limit || 5
+        let limit = req.query.limit || 10
         let page = req.query.page || 1
         let sort = req.query.sort 
         let query = req.query.query 
@@ -55,6 +58,28 @@ router.get("/products", async (req, res) => {
         return res.status(500).send({status: "InternalServerError", error: err.message}) 
     }
 });
+
+// Get products from given cart
+router.get("/carts/:cid", async(req, res) => {
+    try {
+        let cid = req.params.cid
+
+        // get the wanted cart products
+        let prods = await cartDBManager.getCartByIdPopulate(cid);
+
+        // If we get null then the cart with given id wasn't found
+        if (!prods){
+            return res.status(404).send({status: "NotFoundError", error: "cart with param id not found"})
+        }
+
+        res.send(prods)
+        //res.render("cart", prods)
+
+    } catch (err) {
+        // Error handling if the cartManager sends an error
+        return res.status(400).send({status:"InternalServerError", error: err.message})
+    }
+})
 
 
 // Sockets - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
