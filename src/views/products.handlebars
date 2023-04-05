@@ -1,4 +1,6 @@
-<h1>Products</h1>
+<h1>Products, bienvenido {{name}}</h1> <br>
+<h2>{{email}}</h2> <br>
+<h2>{{role}}</h2>
 <div>
     {{#if payload.length}}
         <table>
@@ -42,4 +44,10 @@
     {{/if}}
 </div>
 
+<br>
+<div>
+    <button id="btnLogout">Logout</button> 
+</div>
+
 <script src="/js/products.js"></script>
+<script src="/js/logout.js"></script>
