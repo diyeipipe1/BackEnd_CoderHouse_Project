@@ -1,9 +1,5 @@
-import UserDBManager from "../dao/dbmanagers/UserDBManager.js";
 import {UserService} from "../repositories/index.repositories.js"
 import passport from "passport";
-
-// activate the user manager
-const userDBManager = new UserDBManager()
 
 // Create class for exporting Callback functions
 export default class UsersController{
