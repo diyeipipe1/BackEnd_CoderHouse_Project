@@ -5,8 +5,8 @@ export default class UserDTO{
         this.last_name = userRaw.last_name ? userRaw.last_name : "No last name" 
         this.email = userRaw.email ? userRaw.email : "defaultEmail" 
         this.age = userRaw.age ? userRaw.age : -1 
-        this.password = userRaw.password ? userRaw.password : undefined // Create error, basic data
+        this.password = userRaw.password
         this.role = userRaw.role ? userRaw.role : "user" 
-        this.cart = userRaw.cart ? userRaw.cart : undefined 
+        this.cid = userRaw.cid 
     }
 }
