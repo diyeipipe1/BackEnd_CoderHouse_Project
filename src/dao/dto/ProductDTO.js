@@ -7,6 +7,6 @@ export default class ProductDTO{
         this.code = productRaw.code 
         this.stock = productRaw.stock ? productRaw.stock : 1 
         this.category = productRaw.category ? productRaw.category : "CategoryDefault" 
-        this.status = productRaw.category ? productRaw.category : true
+        this.status = productRaw.status ? productRaw.status : true
     }
 }
