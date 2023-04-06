@@ -1,6 +1,7 @@
 import express from "express";
 import __dirname from '../utils.js'
 import CartController from "../controllers/carts.controller.js"
+import {HandlePolicies} from "../utils.js"
 
 // Bring the module
 const router = express.Router();
@@ -22,7 +23,7 @@ router.post("/", cartController.createNewCart)
 router.get("/:cid", cartController.getAllProducts)
 
 // Add quantity to a product
-router.post("/:cid/product/:pid", cartController.addQuantity)
+router.post("/:cid/product/:pid", HandlePolicies(['USER']), cartController.addQuantity)
 
 // Update whole product list 
 router.put("/:cid", cartController.updateProducts)
