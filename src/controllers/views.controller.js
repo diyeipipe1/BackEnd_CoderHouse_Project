@@ -37,7 +37,7 @@ export default class ViewsController{
             // Defaults in case they don't arrive with github
             let name = "default"
             let email = "defaultEmail"
-            let role = "defaultRole"
+            let role = "user"
             if (req.user){
                 name = req.user.name
                 email = req.user.email
