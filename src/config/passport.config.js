@@ -1,12 +1,8 @@
 import passport from "passport";
 import local from "passport-local";
-import {UserService} from "../repositories/index.repositories.js"
-import CartDBManager from "../dao/dbmanagers/CartDBManager.js";
+import {UserService, CartService} from "../repositories/index.repositories.js"
 import {createHash, isValidPassword, ClientSecret} from "../utils.js"
 import githubService from 'passport-github2';
-
-// activate the user manager
-const cartDBManager = new CartDBManager()
 
 
 const localStrategy = local.Strategy;
@@ -26,7 +22,7 @@ const initPassport = () => {
                     }
 
                     // Create cart
-                    const cart = await cartDBManager.addCart()
+                    const cart = await CartService.addCart()
     
                     // Create user
                     const user = await UserService.registerUser(userNew.first_name, userNew.last_name, userNew.email, 
@@ -92,7 +88,7 @@ const initPassport = () => {
                 }
 
                 // Create cart
-                const cart = await cartDBManager.addCart()
+                const cart = await CartService.addCart()
 
                 // Create user
                 const userCreat = await UserService.registerUser(userNew.first_name, userNew.last_name, userNew.email, 

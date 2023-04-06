@@ -1,9 +1,8 @@
 import ProductDBManager from "../dao/dbmanagers/ProductDBManager.js";
-import CartDBManager from "../dao/dbmanagers/CartDBManager.js";
+import {CartService} from "../repositories/index.repositories.js"
 
 // activate the product manager
 const productDBManager = new ProductDBManager()
-const cartDBManager = new CartDBManager()
 
 // Create class for exporting Callback functions
 export default class ViewsController{
@@ -76,7 +75,7 @@ export default class ViewsController{
             let cid = req.params.cid
     
             // get the wanted cart products
-            let prods = await cartDBManager.getCartByIdPopulate(cid);
+            let prods = await CartService.getCartByIdPopulate(cid);
     
             // If we get null then the cart with given id wasn't found
             if (!prods){
