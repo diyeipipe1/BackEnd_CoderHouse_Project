@@ -37,6 +37,7 @@ router.get("/carts/:cid", viewsController.getProductsCart)
 router.get("/realtimeproducts", viewsController.realTimeProducts)
 
 // Chat application
+// TODO: Add GoToChat button on /products
 router.get("/chat",  HandlePolicies(['USER']), viewsController.chat)
 
 
