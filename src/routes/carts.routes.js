@@ -37,6 +37,9 @@ router.delete("/:cid", cartController.deleteProducts)
 // Delete product from cart
 router.delete("/:cid/product/:pid", cartController.deleteProduct)
 
+// Purchase product from cart
+router.post("/:cid/purchase", cartController.purchaseProduct)
+
 // export the router
 export default router;
 

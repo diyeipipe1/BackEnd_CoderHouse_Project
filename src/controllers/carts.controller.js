@@ -132,4 +132,8 @@ export default class CartController{
             return res.status(404).send({status:"CartNotFoundError", error: err.message})
         }
     }
+
+    purchaseProduct = async(req, res) => {
+        
+    }
 }
