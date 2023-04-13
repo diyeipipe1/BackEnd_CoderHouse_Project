@@ -134,6 +134,25 @@ export default class CartController{
     }
 
     purchaseProduct = async(req, res) => {
-        
+        try {
+            prodsCart = await this.getAllProducts(req, res) //TODO: THIS OR HTML REQUEST?
+    
+            if (!prodsCart.error) {
+                //
+            }else {
+                return res.status(400).send({status:"Error", error: prodsCart.error})
+            }
+            
+            // Use the getAllProductsto get list.. Qnty and stock
+            // If
+            //  Qnty>=Stock, restar del stock y continuar 
+            //  Qnty<Stock No agregar el producto a compras, nada de compras parciales
+            // Ticket create, before any actual update in case of code fail or catch that 
+            // Carrito borrar prods comprados ok
+            // Lista devuelta con prods no comprados
+        } catch (err) {
+            return res.status(404).send({status:"Error", error: err.message})
+
+        }
     }
 }
