@@ -1,5 +1,6 @@
 import express from "express";
 import UsersController from "../controllers/users.controller.js";
+import {uploader} from "../utils.js";
 
 // Bring the module
 const router = express.Router();
@@ -28,6 +29,18 @@ router.get('/githubcalls', usersController.passportGitHubCallback, usersControll
 
 // Show current user
 router.get('/current', usersController.authCurrent)
+
+// Try to send recovery email if user exists
+router.post('/sendemail', usersController.sendEmail)
+
+// Send password to recover
+router.post('/restorepassword', usersController.restorePassword)
+
+// Change normal to premium
+router.get("/premium/:uid", usersController.updateMembership)
+
+// Upload files 
+router.post("/:uid/documents", uploader.any(), usersController.uploadDocuments)
 
 
 // export the router

@@ -2,7 +2,7 @@ import express from "express";
 import session from "express-session";
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
-import __dirname,{MongoConnection, Port, SessionSecret} from './utils.js';
+import __dirname,{MongoConnection, Port, SessionSecret, ErrorHandler, addLogger} from './utils.js';
 import productRouter from "./routes/products.routes.js";
 import cartRouter from "./routes/carts.routes.js";
 import userRouter from "./routes/users.routes.js";
@@ -13,11 +13,31 @@ import MessagesDBManager from "./dao/dbmanagers/MessagesDBManager.js";
 import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
 import passport from "passport";
-import initPassport from "./config/passport.config.js"; 
+import initPassport from "./config/passport.config.js";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUIExpress from "swagger-ui-express";
 
 // Bring the module
 const app = express();
 app.use(express.json()); // Important to work with JSON
+
+// Swagger
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: "Documentación del API",
+            description: "APIs del proyecto"
+        }
+    }, 
+    apis: ['./src/docs/**.yaml']
+}
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use('/apidocs', swaggerUIExpress.serve, swaggerUIExpress.setup(specs))
+
+// Logger
+app.use(addLogger)
 
 // Connect to mongoDB
 mongoose.connect(MongoConnection, (error) => {
@@ -111,6 +131,7 @@ chatNameSpace.on("connection", socket => {
     })
 })
 
+app.use(ErrorHandler)
 
 export default viewNameSpace;
 

@@ -1,5 +1,10 @@
 import {UserService} from "../repositories/index.repositories.js"
+import MailerService from "../services/mailer.services.js"
+import ImageService from "../services/images.services.js"
 import passport from "passport";
+import jwt from 'jsonwebtoken';
+import __dirname,{createHash, isValidPassword} from "../utils.js"
+import fs from "fs";
 
 // Create class for exporting Callback functions
 export default class UsersController{
@@ -36,9 +41,19 @@ export default class UsersController{
 
     authLogout = async (req, res) => {
         try {
-            if (req.session) req.session.destroy();
-            if (req.user) req.user = {}
-            console.log("Logout well done")
+            let email = ""
+            if (req.session) {
+                email = req.session.user.email;
+                req.session.destroy();
+            }
+            if (req.user) {
+                email = req.user.email;
+                req.user = {}
+            }
+            
+            await UserService.updateLastConnection(email)
+
+            req.logger.info("Logout well done")
             res.send("logout success!"); 
         } catch (err) {
             return res.status(400).send({status:"BadRequest", error: err.message})
@@ -63,6 +78,161 @@ export default class UsersController{
     
         } catch (err) {
             return res.status(400).send({status:"BadRequest", error: err.message})
+        }
+    }
+
+    sendEmail = async(req, res) => {
+        try {
+            let email = req.body.email
+
+            const userBool = await UserService.checkUser(email)
+
+            if (userBool && userBool==true) {
+                //Set up token 
+                let token = jwt.sign({email}, "JWT_KEY", {expiresIn: "1h"});
+
+                //Send mail
+                const result = await MailerService.sendRecoveryMail({
+                    from: "diazrochajuanfe@gmail.com",
+                    to: email,
+                    subject: "Recover password",
+                    html: `
+                    <div>
+                        Click the button to reset your password
+                        <br>  
+                        (Link valid for 1 hour)
+                        <br>
+                        <a href="http://localhost:8080/resetPassword/${token}" style="background-color:#008CBA; border:none; color:white; padding: 12px 28px; text-align:center; text-decoration:none; display:inline-block; font-size:16px; margin:4px 2px; cursor:pointer;">Reset Password</a>
+                    </div>
+                    `,
+                    attachments: []
+                })
+
+                if (result.accepted && result.accepted.length > 0){
+                    return res.send({status:"success", payload: result, email: email})
+                }
+                return res.status(400).send({status:"BadRequest", error: "Error, email not sent"})
+            }
+
+            return res.status(400).send({status:"BadRequest", error: "No user with that Email"})
+            
+        } catch (err) {
+            return res.status(400).send({status:"BadRequest", error: err.message})
+        }
+    }
+
+    restorePassword = async(req, res) => {
+        try {
+            let passwordNew = req.body.password;
+            let email = req.headers.email;
+
+            // Error checking, see if there's missing data
+            if (passwordNew){
+                // check user
+                const user = await UserService.getUserByEmail(email)
+    
+                let passNewHash = createHash(passwordNew)
+    
+                // If we get something falsy then the user wasn't retrieved
+                if (!user){
+                    return res.status(400).send({status:"BadRequest", error: "error retrieving user"})
+                }
+    
+                // The new password is compared to the old one, if they're the same, error
+                if (isValidPassword(user, passwordNew)){
+                    return res.send({status:"PreviousData", error: "password can't be the same as previous one"})
+                }
+    
+                user.password = passNewHash
+
+                const userUpdated = await UserService.updateUser(email, user)
+    
+                return res.status(200).send({status:"success", payload: userUpdated})
+            }else{
+                return res.status(400).send({status:"BadRequest", error: "password can not be empty"})
+            }
+        } catch (err) {
+            return res.status(400).send({status:"BadRequest", error: err.message})
+        }
+    }
+
+    updateMembership = async(req, res) => {
+        try {
+            let uid = req.params.uid
+    
+            // Try to update the user with the class function
+            let user = await UserService.updateMembership(uid)
+    
+    
+            // If we get something falsy then the user wasn't updated correctly
+            if (!user){
+                return res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the user"})
+            }
+    
+            res.send({status: "success", payload: user})
+    
+        } catch (err) {
+            return res.status(400).send({status:"Error", error: err.message})
+        }
+    }
+
+    uploadDocuments = async(req, res) => {
+        try {
+            const uploadedFiles = req.files;
+            let uid = req.params.uid;
+
+            // if no files arrive, send an error
+            if (!uploadedFiles || uploadedFiles.length === 0) {
+                return res.status(400).send({status:"EmptyError", error: "No files were uploaded."});
+            }
+
+            let user = await UserService.getUserById(uid)
+
+            // Check if uid is valid
+            if (!user){
+               return res.status(404).send({status:"NotFoundError", error: "user with given ID not found"})
+            }
+
+            let docList = []
+
+            // take all the files and sort them depending on their field name
+            // for products cut out the prfix and leave the pid or prod name
+            for (const file of uploadedFiles){
+                let filePath = ""
+                let fileReference = ""
+                if (file.fieldname === "profile"){
+                    let extension = file.originalname
+                    extension = extension.replace(file.fieldname,"")
+
+                    fileReference = "/public/images/profiles/"+uid+extension
+                    filePath = __dirname + fileReference
+                }else if (file.fieldname.includes("product")) {
+                    // products are assumed to take the form product_name for fieldnames
+                    let prodID = file.fieldname
+                    prodID = prodID.replace("product_","")
+
+                    fileReference = "/public/images/products/"+file.originalname
+                    filePath = __dirname + fileReference 
+                }else {
+                    fileReference = "/public/images/documents/"+uid+"_"+file.originalname
+                    filePath = __dirname+ fileReference
+                }
+
+                // if the image is saved correctly, update user documents, otherwise dont
+                let check = await ImageService(filePath, file)
+                if (check) {
+                    docList.push({
+                        name: file.fieldname,
+                        reference: fileReference
+                    })
+                }
+            }
+
+            user = await UserService.addDocuments(uid, docList)
+            return res.send({status: "success", payload: user})
+
+        } catch (err) {
+            return res.status(400).send({status:"Error", error: err.message})
         }
     }
 }

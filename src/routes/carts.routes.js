@@ -3,6 +3,8 @@ import __dirname from '../utils.js'
 import CartController from "../controllers/carts.controller.js"
 import {HandlePolicies} from "../utils.js"
 
+//TODO: Create simple erase cart by ID
+
 // Bring the module
 const router = express.Router();
 
@@ -23,7 +25,7 @@ router.post("/", cartController.createNewCart)
 router.get("/:cid", cartController.getAllProducts)
 
 // Add quantity to a product
-router.post("/:cid/product/:pid", HandlePolicies(['USER']), cartController.addQuantity)
+router.post("/:cid/product/:pid", HandlePolicies(['USER','PREMIUM']), cartController.addQuantity)
 
 // Update whole product list 
 router.put("/:cid", cartController.updateProducts)

@@ -77,4 +77,40 @@ export default class UserRepository{
         }
     }
 
-}
+    // Update user
+    async updateUser(email, userNew){
+        try {
+            return await this.dao.updateUser(email, userNew)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Update user membership
+    async updateMembership(uid){
+        try {
+            return await this.dao.updateMembership(uid)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Update last_connection
+    async updateLastConnection(email){
+        try {
+            return await this.dao.updateLastConnection(email)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Add document
+    async addDocuments(uid, docList){
+        try {
+            return await this.dao.addDocuments(uid, docList)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    }

@@ -1,4 +1,5 @@
 import {UserModel} from "../models/user.models.js";
+import {getCurrentFormattedDate} from "../../utils.js"
 
 export default class UserDBManager{
     // Register
@@ -95,4 +96,129 @@ export default class UserDBManager{
             }
         }
     } 
+
+    // Update 
+    async updateUser(email, userNew){
+        try {
+            let userAct = await this.getUserByEmail(email)
+            if (userAct){
+                let result = await UserModel.updateOne({_id:userAct.id}, userNew);
+                //console.log(result)
+                
+                if (result.modifiedCount >0){
+                    let finalUser = await this.getUserByEmail(email)
+                    return finalUser
+                }else{
+                    console.log('error updating user')
+                    throw new Error("error updating user, data might be wrong type or same as current document")
+                }
+            }else{
+                console.log('user to update not found')
+                throw new Error("no user found with id given to update")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Update membership
+    async updateMembership(uid){
+        try {
+            let user = await this.getUserById(uid)
+
+            if (user){
+                const check = await this.checkForDocumentation(uid)
+                //console.log(check)
+
+                if (user.role == "user" && check) {
+                    user.role = "premium"
+                } else if (user.role == "user" && !check) {
+                    throw new Error("full documentation has not been processed")
+                }else if (user.role == "premium"){
+                    user.role = "user"
+                }
+
+                let result = await UserModel.updateOne({_id:user.id}, user);
+
+                if (result.modifiedCount >0){
+                    let finalUser = await this.getUserByEmail(user.email)
+                    return finalUser
+                }else{
+                    console.log('error updating user')
+                    throw new Error("error updating user, data might be wrong type or same as current document")
+                }
+            }
+
+            throw new Error("no user found with given id")
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Check for documents in user
+    async checkForDocumentation(uid){
+        try {
+            let user = await this.getUserById(uid)
+            if (user){
+                let profileCheck = false
+                let addressCheck = false
+                let accountCheck = false
+                for (const doc of user.documents){
+                    if (doc.name === "profile") profileCheck = true
+                    if (doc.name === "address") addressCheck = true
+                    if (doc.name === "account") accountCheck = true
+                }
+
+                if (profileCheck && addressCheck && accountCheck){
+                    return true
+                }
+                
+                return false
+            }else{
+                console.log('user to update not found')
+                throw new Error("no user found with id given to update")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Update last_connection
+    async updateLastConnection(email){
+        try {
+            let user = await this.getUserByEmail(email)
+            if (user){
+                user.last_connection = getCurrentFormattedDate();
+                
+                let userUpdated = await this.updateUser(email, user)
+                console.log(userUpdated.last_connection)
+                return userUpdated
+            }else{
+                console.log('user to update not found')
+                throw new Error("no user found with id given to update")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Update documents 
+    async addDocuments(uid, docList){
+        try {
+            let user = await this.getUserById(uid)
+            if (user){
+                for (const doc of docList){
+                    user.documents.push(doc)
+                }
+                
+                let userUpdated = await this.updateUser(user.email, user)
+                return userUpdated
+            }else{
+                console.log('user to update not found')
+                throw new Error("no user found with id given to update")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
 }
