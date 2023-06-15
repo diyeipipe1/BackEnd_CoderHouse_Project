@@ -2,6 +2,18 @@ import {UserModel} from "../models/user.models.js";
 import {getCurrentFormattedDate} from "../../utils.js"
 
 export default class UserDBManager{
+    
+    // Get all users
+    async getAllUsers(){
+        try {
+            let users = await UserModel.find({}, 'first_name last_name email role')
+
+            return users
+        } catch (error) {
+            throw error
+        }
+    }
+
     // Register
     async registerUser(first_name, last_name, email, age, password, cid){
         try {

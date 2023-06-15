@@ -8,6 +8,17 @@ import fs from "fs";
 
 // Create class for exporting Callback functions
 export default class UsersController{
+    getAllUsers = async(req, res) => {
+        try {
+           let users = await UserService.getAllUsers();
+           console.log(users)
+           
+           res.send({status:"Ok", payload: users})
+        } catch (err) {
+            return res.status(500).send({status:"InternalErro", error: err.message})
+        }
+    }
+
     passportAuthRegister = passport.authenticate('register', {session: true})
     authRegister = async(req, res) => {
         try {

@@ -8,6 +8,15 @@ export default class UserRepository{
         this.dao = dao;
     }
 
+    // Get all Users (only important info)
+    async getAllUsers() {
+        try {
+            return await this.dao.getAllUsers()
+        } catch (error) {
+            throw error
+        }
+    }
+
     // Use session user and DTO to return on sensible data
     getUserCurrent(userSession) {
         // To have a correct flow of data, instance the DTO

@@ -12,6 +12,9 @@ router.use(express.urlencoded({extended: true}))
 // activate controller
 const usersController = new UsersController()
 
+// Get all users
+router.get('/', usersController.getAllUsers)
+
 // Use passport to register user
 router.post('/register', usersController.passportAuthRegister, usersController.authRegister)
 
