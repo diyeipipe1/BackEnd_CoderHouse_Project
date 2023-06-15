@@ -233,4 +233,37 @@ export default class UserDBManager{
             throw error
         }
     }
+
+    // Get old users
+    async getOldUsers(threeDaysAgo){
+        try {
+            let users = await UserModel.find({ last_connection: { $lt: threeDaysAgo } })
+
+            return users
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Delete User with given email
+    async deleteUserByEmail(email) {
+        try {
+            let user = await this.getUserByEmail(email)
+            if (user) {
+                let result = await UserModel.deleteOne({email:email})
+
+                if (result.deletedCount === 1){
+                    return true
+                } else{
+                    console.log('error deleting product')
+                    return false
+                }
+            } else {
+                console.log('product to delete not found')
+                return false
+            }
+        } catch (error) {
+            throw error
+        }
+    }
 }

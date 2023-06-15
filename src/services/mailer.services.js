@@ -12,7 +12,7 @@ class MailerServiceClass{
         })
     }
 
-    sendRecoveryMail= async({from, to, subject, html, attachments=[]})=>{
+    pushEmail= async({from, to, subject, html, attachments=[]})=>{
         try {
             let result = await this.transport.sendMail({
                 from,

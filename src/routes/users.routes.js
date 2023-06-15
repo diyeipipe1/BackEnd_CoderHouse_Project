@@ -45,6 +45,9 @@ router.get("/premium/:uid", usersController.updateMembership)
 // Upload files 
 router.post("/:uid/documents", uploader.any(), usersController.uploadDocuments)
 
+// Delete non active users
+router.delete("/", usersController.deleteOldUsers)
+
 
 // export the router
 export default router;

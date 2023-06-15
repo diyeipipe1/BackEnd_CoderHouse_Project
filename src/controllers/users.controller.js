@@ -11,11 +11,10 @@ export default class UsersController{
     getAllUsers = async(req, res) => {
         try {
            let users = await UserService.getAllUsers();
-           console.log(users)
            
            res.send({status:"Ok", payload: users})
         } catch (err) {
-            return res.status(500).send({status:"InternalErro", error: err.message})
+            return res.status(500).send({status:"InternalError", error: err.message})
         }
     }
 
@@ -103,7 +102,7 @@ export default class UsersController{
                 let token = jwt.sign({email}, "JWT_KEY", {expiresIn: "1h"});
 
                 //Send mail
-                const result = await MailerService.sendRecoveryMail({
+                let result = await MailerService.pushEmail({
                     from: "diazrochajuanfe@gmail.com",
                     to: email,
                     subject: "Recover password",
@@ -245,5 +244,60 @@ export default class UsersController{
         } catch (err) {
             return res.status(400).send({status:"Error", error: err.message})
         }
+    }
+
+    // Delete users that have not connected for x time
+    deleteOldUsers = async(req, res) => {
+        try {
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 300);
+
+            let users = await UserService.getOldUsers(threeDaysAgo);
+
+            if (users.length == 0){
+                return res.status(404).send({status: "NoUsersToDelete", error: "No users to delete found"})
+            }
+
+            let emails = []
+            for (const user of users) {
+                let check = await UserService.deleteUserByEmail(user.email);
+                if (check) {
+                    emails.push(user.email)
+                }
+            }
+
+            let sentEmails = []
+            for (const email of emails) {
+                console.log(email)
+                //Send mail
+                let fail = false
+                let result = await MailerService.pushEmail({
+                    from: "diazrochajuanfe@gmail.com",
+                    to: email,
+                    subject: "Your user was deleted",
+                    html: `
+                    <div>
+                        Due to recent inactivity your user account was deleted. 
+                        Feel free to create another one at any time. We hope to see you again soon!              
+                    </div>
+                    `,
+                    attachments: []
+                }).catch((_) => {
+                    fail = true       
+                })
+
+                if (!fail && result.accepted && result.accepted.length > 0){
+                    sentEmails.push(email)
+                }
+            }
+            
+            if (sentEmails.length >= 1 || emails.length >= 1) {
+                return res.send({status:"Ok", payload: {users_deleted:emails,users_notified:sentEmails}})
+            }
+
+            return res.status(500).send({status: "NoUsersDeleted", error: "No users were deleted"})
+         } catch (err) {
+             return res.status(500).send({status:"InternalError", error: err.message})
+         }
     }
 }

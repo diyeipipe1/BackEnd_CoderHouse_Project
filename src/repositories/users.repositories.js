@@ -122,4 +122,22 @@ export default class UserRepository{
         }
     }
 
+    // Delete users that have not connected for x time
+    async getOldUsers(threeDaysAgo){
+        try {
+            return await this.dao.getOldUsers(threeDaysAgo)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Delete user
+    async deleteUserByEmail(email){
+        try {
+            return await this.dao.deleteUserByEmail(email)
+        } catch (error) {
+            throw error
+        }
+    }
+
     }
