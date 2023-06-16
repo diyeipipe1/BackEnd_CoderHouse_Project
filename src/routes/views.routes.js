@@ -51,5 +51,9 @@ router.get("/recover", viewsController.recoverPassword)
 // After link, reset the password  - - - - - - - - - - - - - - - - - - -
 router.get("/resetPassword/:token", viewsController.resetPassword)
 
+// Update membership status - - - - - - - - - - - - - - - - - - - - - - -
+router.get("/memberSwitch", viewsController.membershipSwitch)
+//TODO: To only allow admin to see it router.get("/chat",  HandlePolicies(['ADMIN']), viewsController.chat)
+
 // export the router
 export default router;

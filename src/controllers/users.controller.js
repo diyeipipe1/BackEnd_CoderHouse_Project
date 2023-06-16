@@ -179,7 +179,7 @@ export default class UsersController{
                 return res.status(400).send({status: "NotUpdatedError", error: "there was an error updating the user"})
             }
     
-            res.send({status: "success", payload: user})
+            res.status(200).send({status: "success", payload: user})
     
         } catch (err) {
             return res.status(400).send({status:"Error", error: err.message})
@@ -251,6 +251,7 @@ export default class UsersController{
         try {
             const threeDaysAgo = new Date();
             threeDaysAgo.setDate(threeDaysAgo.getDate() - 300);
+            //TODO: Set 300 days for now, don't want to lose all my users :D 
 
             let users = await UserService.getOldUsers(threeDaysAgo);
 
@@ -290,7 +291,7 @@ export default class UsersController{
                     sentEmails.push(email)
                 }
             }
-            
+
             if (sentEmails.length >= 1 || emails.length >= 1) {
                 return res.send({status:"Ok", payload: {users_deleted:emails,users_notified:sentEmails}})
             }

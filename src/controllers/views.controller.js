@@ -145,4 +145,8 @@ export default class ViewsController{
             return res.status(400).send({status:"TokenError", error: err.message});
         }
     }
+
+    membershipSwitch = (req, res) => {
+        res.render("switch")
+    }
 }
