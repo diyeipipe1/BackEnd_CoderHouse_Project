@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import {faker} from '@faker-js/faker';
-import {ErrorCodes} from './errors.js';
 import winston from 'winston';
 import multer from "multer";
 
@@ -59,26 +58,6 @@ export const GenerateProduct = () => {
         stock: faker.datatype.number({min:1, max: 100}),
         category: faker.helpers.arrayElement(categories),
         status: true
-    }
-}
-
-// Error Middleware
-export const ErrorHandler = (error, req, res, next) => {
-    // TODO: All the same, unless special treatment ocurrs, this could be simplified
-    // TODO: Elim custom error if not needed for final hand in
-    switch (error.code){
-        case ErrorCodes.MISSING_DATA:
-            return res.status(error.statusCode).send({status: "error", error: error.name, details: error.cause || error.message });
-        case ErrorCodes.NOT_CREATED:
-            return res.status(error.statusCode).send({status: "error", error: error.name, details: error.cause || error.message});
-        case ErrorCodes.MISSING_DATA:
-            return res.status(error.statusCode).send({status: "error", error: error.name, details: error.cause || error.message});
-        case ErrorCodes.INTERNAL_SERVER:
-            return res.status(error.statusCode).send({status: "error", error: error.name, details: error.cause || error.message});
-        case ErrorCodes.NOT_FOUND:
-            return res.status(error.statusCode).send({status: "error", error: error.name, details: error.cause || error.message});
-        default:
-            return res.status(error.statusCode || 400).send({status: "error", error: error.name || "UncaughtError", error: error.message || error.cause});
     }
 }
 

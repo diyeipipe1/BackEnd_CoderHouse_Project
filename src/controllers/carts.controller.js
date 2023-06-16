@@ -1,4 +1,5 @@
-import {CartService} from "../repositories/index.repositories.js"
+import {CartService} from "../repositories/index.repositories.js";
+import {ProductService} from "../repositories/index.repositories.js";
 
 // Create class for exporting Callback functions
 export default class CartController{
@@ -135,6 +136,8 @@ export default class CartController{
 
     purchaseProduct = async(req, res) => {
         try {
+            let cid = req.params.cid
+            let response = await ProductService.getProducts(limit, page, sort, query)
             prodsCart = await this.getAllProducts(req, res) //TODO: THIS OR HTML REQUEST?
     
             if (!prodsCart.error) {

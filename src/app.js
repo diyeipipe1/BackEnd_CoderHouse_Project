@@ -2,7 +2,7 @@ import express from "express";
 import session from "express-session";
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
-import __dirname,{MongoConnection, Port, SessionSecret, ErrorHandler, addLogger} from './utils.js';
+import __dirname,{MongoConnection, Port, SessionSecret, addLogger} from './utils.js';
 import productRouter from "./routes/products.routes.js";
 import cartRouter from "./routes/carts.routes.js";
 import userRouter from "./routes/users.routes.js";
@@ -130,8 +130,6 @@ chatNameSpace.on("connection", socket => {
         chatNameSpace.emit('chatMakeJS', logsWSocketMessageUser)
     })
 })
-
-app.use(ErrorHandler)
 
 export default viewNameSpace;
 

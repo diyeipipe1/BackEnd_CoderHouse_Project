@@ -1,6 +1,5 @@
 import {ProductService} from "../repositories/index.repositories.js";
 import {GenerateProduct} from  "../utils.js"
-import {CustomError, ErrorCodes, GenerateErrorInfo} from "../errors.js"
 
 // Create class for exporting Callback functions
 export default class ProductController{
@@ -17,9 +16,9 @@ export default class ProductController{
             let response = await ProductService.getProducts(limit, page, sort, query);
     
             res.send(response)
-        } catch (error) {
+        } catch (err) {
             // Error handling if the productManager sends an error
-            return CustomError.CreateError({statusCode: 500, name:"InternalServerError", message: error.message, code: ErrorCodes.INTERNAL_SERVER})
+            return res.status(500).send({status:"InternalServerError", error: err.message})
         }
     }
 
@@ -33,15 +32,13 @@ export default class ProductController{
     
             // If we get null then the product with given id wasn't found
             if (!product){
-                CustomError.CreateError({statusCode: 404, name:"NotFoundError", cause: "product with param id not found", code: ErrorCodes.NOT_FOUND})
+                return res.status(404).send({status:"NotFoundError", error: "product with param id not found"})
             }
     
             res.send(product)
-        } catch (error) {
-            if (error.statusCode && (error.statusCode == 404)){return next(error)}
-
+        } catch (err) {
             // Error handling if the productManager sends an error
-            return CustomError.CreateError({statusCode: 500, name:"InternalServerError", message: error.message, code: ErrorCodes.INTERNAL_SERVER})
+            return res.status(500).send({status:"InternalServerError", error: err.message})
         }
     }
 
@@ -64,18 +61,16 @@ export default class ProductController{
         
                 // If we get something falsy then the product wasn't created correctly
                 if (!product){
-                    CustomError.CreateError({statusCode: 400, name:"NotCreatedError", cause: "there was an error creating the product", code: ErrorCodes.NOT_CREATED})
+                    return res.status(400).send({status:"NotCreatedError", error: "there was an error creating the product"})
                 }
     
                 res.send(product)
             }else{
-                CustomError.CreateError({statusCode: 400, name:"BadRequest", cause: "missing field or fields in request body", code: ErrorCodes.MISSING_DATA})
+                return res.status(400).send({status:"BadRequest", error: "missing field or fields in request body"})
             }
         } catch (err) {
-            if (err.statusCode && (error.statusCode == 400)){return next(error)}
-
             // Error handling if the productManager sends an error
-            return CustomError.CreateError({statusCode: 400, name:"BadRequest", message: err.message, code: ErrorCodes.BAD_REQUEST})
+            return res.status(400).send({status:"BadRequest", error: err.message})
         }
     }
 

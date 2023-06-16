@@ -39,7 +39,7 @@ export default class ProductDBManager{
             // if there's a query, assume it works and assign, let db error handle
             if (query) {
                 if (typeof query === 'string') {
-                    query = JSON.parse(query);
+                    query = await JSON.parse(decodeURIComponent(query));
                 }
                 options.query = query;
             }
