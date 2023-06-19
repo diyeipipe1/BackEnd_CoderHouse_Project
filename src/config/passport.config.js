@@ -68,7 +68,7 @@ const initPassport = () => {
                 }
             } catch (err) {
                 // Error handling if the userDBManager sends an error
-                return done (null, {_id:0, errorMess:error.message})
+                return done (null, {_id:0, errorMess:err.message})
             }
         }
     ));

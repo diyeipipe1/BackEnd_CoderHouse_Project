@@ -117,7 +117,7 @@ export default class UserDBManager{
                 let result = await UserModel.updateOne({_id:userAct.id}, userNew);
                 //console.log(result)
                 
-                if (result.modifiedCount >0){
+                if (result.modifiedCount > 0){
                     let finalUser = await this.getUserByEmail(email)
                     return finalUser
                 }else{
@@ -200,7 +200,7 @@ export default class UserDBManager{
         try {
             let user = await this.getUserByEmail(email)
             if (user){
-                user.last_connection = getCurrentFormattedDate();
+                user.last_connection = new Date();
                 
                 let userUpdated = await this.updateUser(email, user)
                 console.log(userUpdated.last_connection)

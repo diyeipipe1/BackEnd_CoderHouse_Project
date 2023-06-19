@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     ],
     last_connection: { 
         type: Date, 
-        default: getCurrentFormattedDate
+        default: new Date()
     }
 })
 
