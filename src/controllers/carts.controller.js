@@ -1,5 +1,4 @@
-import {CartService} from "../repositories/index.repositories.js";
-import {ProductService} from "../repositories/index.repositories.js";
+import {CartService, ProductService, TicketService, UserService} from "../repositories/index.repositories.js";
 
 // Create class for exporting Callback functions
 export default class CartController{
@@ -137,25 +136,64 @@ export default class CartController{
     purchaseProduct = async(req, res) => {
         try {
             let cid = req.params.cid
-            let response = await ProductService.getProducts(limit, page, sort, query)
-            prodsCart = await this.getAllProducts(req, res) //TODO: THIS OR HTML REQUEST?
+            let productsInCart = await CartService.getCartByIdPopulate(cid);
     
-            if (!prodsCart.error) {
-                //
-            }else {
-                return res.status(400).send({status:"Error", error: prodsCart.error})
+            // If we get null then the cart with given id wasn't found
+            if (!productsInCart || productsInCart.length <= 0){
+                return res.status(404).send({status: "NotFoundError", error: "products for cart not found"})
             }
-            
-            // Use the getAllProductsto get list.. Qnty and stock
-            // If
-            //  Qnty>=Stock, restar del stock y continuar 
-            //  Qnty<Stock No agregar el producto a compras, nada de compras parciales
-            // Ticket create, before any actual update in case of code fail or catch that 
-            // Carrito borrar prods comprados ok
-            // Lista devuelta con prods no comprados
+
+            productsInCart = await buyProducts(productsInCart, cid)
+
+            CartService.updateCart(cid, productsInCart)
+
+            let listIDsNotBought = []
+            productsInCart.forEach(prod => {
+                listIDsNotBought.push(prod.id)
+            })
+
+            return listIDsNotBought
         } catch (err) {
             return res.status(404).send({status:"Error", error: err.message})
 
+        }
+    }
+
+    async buyProduct(productsInCart, cid) {
+        try {
+            let checkProduct = false
+            let total = 0
+            for (let i = 0; i < productsInCart.length; i++) {
+                var prodCart = productsInCart[i]
+                if (prodCart.quantity <= prodCart.product.stock) {
+                    let prodNew = prodCart.product
+                    prodNew.stock = prodNew.stock - prodCart.quantity
+    
+                    // update product
+                    ProductService.updateProduct(prodNew.id, prodNew)
+                    // update cart locally
+                    productsInCart.splice(i, 1)
+                    // create ticket green flag
+                    checkProduct = true
+                    total = total + prodNew.price
+                }
+            };
+
+            // Create ticket
+            if (checkProduct){
+                let user = await UserService.getUserByCartID(cid) 
+                if (user){
+                    TicketService.addTicket({
+                        amount : total,
+                        purchaser : user.email
+                    })
+                } else{
+                    throw new Error("Ticket error, cart id not related to any user")
+                }
+            }
+
+        } catch (error) {
+            throw error
         }
     }
 }

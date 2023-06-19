@@ -140,4 +140,13 @@ export default class UserRepository{
         }
     }
 
+    // Get user by cart ID
+    async getUserByCartID(cid){
+        try {
+            return await this.dao.getUserByCartID(cid)
+        } catch (error) {
+            throw error
+        }
     }
+
+}

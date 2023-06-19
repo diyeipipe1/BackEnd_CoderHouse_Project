@@ -266,4 +266,23 @@ export default class UserDBManager{
             throw error
         }
     }
+
+    // Get User by Cart ID
+    async getUserByCartID(id){
+        try {
+            let user = await UserModel.findOne({ cart: cartId });
+            if (user) {
+                return user
+            }
+
+            console.log("no users with given ID")
+            return null
+        } catch (error) {
+            if ((error.message).indexOf("Cast to ObjectId failed for value") !== -1){
+                return null
+            }else{
+                throw error
+            }
+        }
+    }
 }
